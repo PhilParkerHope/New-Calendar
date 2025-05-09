@@ -1,0 +1,272 @@
+<!-- Litepicker CSS -->
+<link href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" rel="stylesheet" />
+<!-- Litepicker JS -->
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="custom-multiselect mb-3">
+            <div class="dropdown-toggle" onclick="toggleTagDropdown()">▼ Select Categories</div>
+            <div class="dropdown-options" id="tagDropdownOptions"></div>
+            <div class="selected-options" id="selectedTags"></div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="custom-multiselect mb-3 jb-events-filter">
+
+            <div class="dropdown-toggle" onclick="toggleDropdown()">▼ Select Campuses</div>
+            <div class="dropdown-options" id="campusDropdownOptions"></div>
+            <div class="selected-options" id="selectedCampuses"></div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="custom-multiselect mb-3">
+            <div class="dropdown-toggle" onclick="picker.show()">📅 Select Date Range</div>
+            <input type="text" id="dateRangePicker" class="form-control d-none" readonly>
+            <input type="hidden" id="startDate">
+            <input type="hidden" id="endDate">
+        </div>
+    </div>
+</div>
+
+<!-- Separate row for Search button -->
+<div class="container mt-4">
+    <div class="row justify-content-center jb-block-button">
+        <div class="col-auto wp-block-button">
+            <a id="calendarSearchBtn" class="wp-block-button__link wp-element-button" onclick="updateSearchParams()">
+                Filter Events
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div id="MyCustomWidget" data-component="CustomWidget" data-sp="api_Custom_LCOH_Calendar_List_Filter_v2"
+    data-template="https://hopeautomation.blob.core.windows.net/downloads/newCalendar.html" data-requireUser="false"
+    data-cache="false" data-host="hope" data-debug="true">
+</div>
+
+<div class="container mt-4 jb-gray-bg">
+    <div class="row" id="event-wrapper"></div>
+</div>
+<div class="pagination-container text-center mt-4">
+    <div id="calendar-pagination"></div>
+</div>
+
+
+<script src="https://hopeautomation.blob.core.windows.net/downloads/customWidgetV1.js"></script>
+
+<script src="https://hopeautomation.blob.core.windows.net/downloads/calendar-widget.js"></script>
+
+<style>
+    .event-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .pagination-container .btn {
+        background: none;
+        border: none;
+        color: #555;
+        font-size: 1rem;
+        font-weight: 500;
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .pagination-container .btn:hover {
+        color: #000;
+    }
+
+    .pagination-container .btn:disabled {
+        color: #aaa;
+        cursor: default;
+    }
+
+    .event-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+        /* smooth grow + shadow */
+        background-color: #fff;
+    }
+
+    .event-card:hover {
+        transform: scale(1.03);
+        /* 3% larger */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        border: 2px solid #ccc;
+    }
+
+    .event-image {
+        max-width: 100%;
+        height: auto;
+        max-height: 180px;
+        object-fit: contain;
+        border-radius: 4px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    .event-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+        line-height: 1.3;
+        min-height: 2.6rem;
+        /* ~2 lines */
+        overflow: hidden;
+    }
+
+    #MyCustomWidget {
+        height: 20px;
+    }
+
+    img.event-image {
+        margin-bottom: 1rem;
+    }
+
+    a.text-decoration-none {
+        text-decoration: none !important;
+    }
+
+    .custom-multiselect {
+        position: relative;
+        padding: 0.5rem;
+        cursor: pointer;
+    }
+
+    .selected-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge {
+        font-weight: bold;
+        color: rgb(48, 51, 51);
+        padding: 2px 10px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .badge .remove {
+        margin-left: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .dropdown-toggle {
+        background: rgb(255, 255, 255);
+        padding: 0.5rem;
+        border-radius: 30px;
+        text-align: left;
+        user-select: none;
+        border-color: rgba(34, 36, 38, 0.35);
+        border-style: solid;
+        border-radius: 1.875rem;
+        align-items: center;
+        display: flex;
+        gap: 0.3125rem;
+        padding: 0.9375rem calc(var(--jb--spacer--small) * 2 + 0.625rem) 0.9375rem var(--jb--spacer--small);
+        justify-content: center;
+    }
+
+    .dropdown-options {
+        display: none;
+        position: absolute;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        /* gives the pill shape */
+        width: 100%;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        margin-top: 5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        /* subtle elevation */
+        padding: 0.5rem 0;
+    }
+
+    .dropdown-options label {
+        display: block;
+        padding: 0.75rem 1rem;
+        /* taller, more touch-friendly */
+        cursor: pointer;
+        font-size: 1rem;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+    .dropdown-options label:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-options label:hover {
+        background: #f9f9f9;
+    }
+
+
+    .custom-multiselect.open .dropdown-options {
+        display: block;
+    }
+
+    #calendarSearchBtn {
+        display: inline-block !important;
+        margin: 1rem auto !important;
+    }
+
+
+    .col.text-center {
+        text-align: center !important;
+    }
+
+    @media (max-width: 768px) {
+        h2.jb-events-item__title {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+    }
+
+    #dateRangePicker {
+        visibility: hidden;
+        height: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    #calendar-pagination {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        /* Optional: keeps buttons from overflowing */
+        margin-bottom: 2rem;
+    }
+
+    .event-card .event-details div {
+        color: #303333;
+    }
+
+    .event-card:hover .event-details div {
+        color: #303333;
+    }
+</style>
