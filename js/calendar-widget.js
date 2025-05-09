@@ -1,4 +1,3 @@
-(() => {
  // 1. Handle query string and widget param injection
  function getUrlParams() {
     const p = new URLSearchParams(window.location.search);
@@ -429,4 +428,3 @@ window.addEventListener("widgetLoaded", function (event) {
     renderPage(currentPage);
 });
 
-})();
