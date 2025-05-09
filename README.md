@@ -96,9 +96,6 @@ To return events within a given date range and filter set (tags, congregations) 
 * Dates are returned as ISO strings for JavaScript use.
 * Events are only included if `Visibility_Level_ID = 4` (public), `_Web_Approved = 1`, `_Approved = 1`, and `Cancelled = 0`.
 * `@SearchQuery` is used in a `LIKE` against title, description, and meeting instructions.
-
+* This project is licensed under the MIT License, but commercial use, reselling, or claiming this code as your own is not permitted. Contact me for commercial licensing.
 ---
 
-Let me know if you’d like to break this out into separate files or add versioning/tags.
-
-is this markdown code?  i want the markdown code.  also, which license should i put on this?  i don't really want people to rip it off
